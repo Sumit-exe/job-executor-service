@@ -1,0 +1,24 @@
+
+server:
+  port: 8081
+logging:
+  level:
+    org.springframework.data.cassandra: DEBUG
+
+spring:
+  application:
+    name: jobexecutor
+  cassandra:
+    contact-points: localhost
+    port: 9042
+    keyspace-name: scheduler
+    local-datacenter: datacenter1
+    schema-action: create-if-not-exists
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: job-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
