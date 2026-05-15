@@ -1,24 +1,45 @@
-
 server:
-  port: 8081
+  port: ${SERVER_PORT:8080}
+
 logging:
   level:
-    org.springframework.data.cassandra: DEBUG
+    org.springframework.data.cassandra: ${CASSANDRA_LOG_LEVEL:INFO}
 
 spring:
   application:
-    name: jobexecutor
+    name: ${APPLICATION_NAME:jobexecutor}
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.data.cassandra.autoconfigure.DataCassandraAutoConfiguration
+      - org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration
+
   cassandra:
-    contact-points: localhost
-    port: 9042
-    keyspace-name: scheduler
-    local-datacenter: datacenter1
-    schema-action: create-if-not-exists
+    keyspace-name: ${CASSANDRA_KEYSPACE:scheduler}
+    schema-action: ${CASSANDRA_SCHEMA_ACTION:create-if-not-exists}
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    ssl:
+      ca-pem-location: ${KAFKA_CA_PEM_LOCATION:src/main/resources/certs/truststore.jks}
+      svc-pem-location: ${KAFKA_SVC_PEM_LOCATION:src/main/resources/certs/client.p12}
+      truststore-password: ${KAFKA_TRUSTSTORE_PASSWORD}
+      keystore-password: ${KAFKA_KEYSTORE_PASSWORD}
+
     consumer:
-      group-id: job-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:job-execution-topic-quickstart-consumer}
+      topic: ${KAFKA_CONSUMER_TOPIC:job-execution-topic}
+      auto-offset-reset: ${KAFKA_AUTO_OFFSET_RESET:earliest}
+
+  data:
+    cassandra:
+      username: ${CASSANDRA_USERNAME}
+      password: ${CASSANDRA_PASSWORD}
+
+datastax:
+  astra:
+    secure-connect-bundle: ${ASTRA_SECURE_CONNECT_BUNDLE:src/main/resources/secure-connect.zip}
+
+jwt:
+  secret: ${JWT_SECRET}
